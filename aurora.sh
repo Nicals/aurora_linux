@@ -52,8 +52,6 @@ function perform_install {
 
   # init wine and install tricks
   wine wineboot
-  echo -e "\033[0;32mPlease configure your wine installation as Windows  98\033[0m"
-  winecfg
   winetricks vb6run
   regsvr32 ole32.dll
   regsvr32 oleaut32.dll
