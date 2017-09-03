@@ -23,4 +23,12 @@ And to get a list of available action, use
 
 ```bash-session
 $ ./aurora.sh help
+Usage: aurora.sh ACTION
+
+Available actions are:
+  install         build a new installation of aurora
+  start           start aurora
+  winecfg         open winecfg for the aurora wine prefix
+  help            display this
+
 ```
