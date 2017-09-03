@@ -21,6 +21,7 @@ Usage: aurora.sh ACTION
 Available actions are:
   install         build a new installation of aurora
   start           start aurora
+  winecfg         open winecfg for the aurora wine prefix
   help            display this
 HelpText
 }
@@ -83,6 +84,17 @@ function run_aurora {
 }
 
 
+function run_winecfg {
+  if [ ! -d $aurora_base_path/wine ]
+  then
+    echo -e "\033[0;31mAurora wine prefix is not found. Aborting\033[0m"
+    exit 1
+  fi
+
+  winecfg
+}
+
+
 # make sure we have all we need
 ensure_program "wine"
 ensure_program "winetricks"
@@ -103,6 +115,9 @@ case $1 in
     ;;
   start)
     run_aurora
+    ;;
+  winecfg)
+    run_winecfg
     ;;
   help)
     display_help
