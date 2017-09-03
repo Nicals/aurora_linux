@@ -67,12 +67,18 @@ function perform_install {
   $winetricks mdac28
 
   # kill error14
-  wget  https://mirrors.netix.net/sourceforge/v/vb/vb6extendedruntime/redist%20archive/dcom98.exe -P dl
+  if [ ! -e $dl_dir/dcom98.exe ]
+  then
+    wget -N https://mirrors.netix.net/sourceforge/v/vb/vb6extendedruntime/redist%20archive/dcom98.exe -P dl
+  fi
   echo -e "\033[0;32mWe will now install dcom98.exe. Please enter C:\\windows\\system when prompted to extract files\033[0m"
   wine $dl_dir/dcom98.exe /C
 
   # install aurora
-  wget -N http://aurora.iosphe.re/Aurora_latest.zip -P $dl_dir
+  if [ ! -e $dl_dir/Aurora_latest.zip ]
+  then
+    wget -N http://aurora.iosphe.re/Aurora_latest.zip -P $dl_dir
+  fi
   unzip $aurora_base_path/dl/Aurora_latest.zip -d $aurora_base_path/wine/drive_c/
 
   # replace dll (this is the Simple Shutdown Timer trick)
