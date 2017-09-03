@@ -98,8 +98,17 @@ function perform_install {
 
 
 function run_aurora {
-  # Aurora needs to be started from its directory
-  cd $WINEPREFIX/drive_c/Aurora
+  local aurora_path=$WINEPREFIX/drive_c/Aurora
+
+  # make sure Aurora is installed
+  if [ ! -d $aurora_path ]
+  then
+    echo -e "\033[0;31mNo aurora installation found in $aurora_path. Aborting\033[0m"
+    exit 1
+  fi
+
+  # Aurora needs to be started from its own directory
+  cd $aurora_path
   LC_ALL="C" wine Aurora.exe
 }
 
