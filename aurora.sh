@@ -87,7 +87,7 @@ function perform_install {
   unzip $aurora_base_path/dl/Aurora_latest.zip -d $aurora_base_path/wine/drive_c/
 
   # replace dll (this is the Simple Shutdown Timer trick)
-  cp $aurora_base_path/msstdfmt.dll $aurora_base_path/wine/drive_c/Aurora/MSSTDFMT.DLL
+  cp $aurora_base_path/msstdfmt.dll $aurora_base_path/wine/drive_c/windows/system32/
 
   # aurora won't start (or will crash ? Can't remember) if its log directory does not exist
   mkdir $aurora_base_path/wine/drive_c/Logs
