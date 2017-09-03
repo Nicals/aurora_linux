@@ -175,7 +175,11 @@ do
 
   case $current_arg in
     -p|--path)
-      realpath $1 2> /dev/null || { echo The $1 directory is not valid; exit 1; }
+      if [ ! -d $(basename $1) ]
+      then
+        echo -e "\033[0;31mThe $1 directory is not a valid wine prefix. Aborting\033[0m"
+        exit 1
+      fi
       export WINEPREFIX=$(realpath $1)
       shift
       ;;
