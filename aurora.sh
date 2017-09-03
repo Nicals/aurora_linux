@@ -46,18 +46,25 @@ function perform_install {
     esac
   fi
 
-  # download of any installation file will be done in this directory
+  # downloaded files will end up in this directory
   [ -d $dl_dir ] || mkdir $dl_dir
-  wget -N http://aurora.iosphe.re/Aurora_latest.zip -P $dl_dir
+
+  # get latest winetricks
+  if [ ! -e $dl_dir/winetricks ]
+  then
+    wget -N https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks -P $dl_dir
+    chmod +x $dl_dir/winetricks
+  fi
+  local winetricks=$dl_dir/winetricks
 
   # init wine and install tricks
   wine wineboot
-  winetricks vb6run
+  $winetricks vb6run
   regsvr32 ole32.dll
   regsvr32 oleaut32.dll
-  winetricks jet40
+  $winetricks jet40
   regsvr32 msjet40.dll
-  winetricks mdac28
+  $winetricks mdac28
 
   # kill error14
   wget  https://mirrors.netix.net/sourceforge/v/vb/vb6extendedruntime/redist%20archive/dcom98.exe -P dl
@@ -65,6 +72,7 @@ function perform_install {
   wine $dl_dir/dcom98.exe /C
 
   # install aurora
+  wget -N http://aurora.iosphe.re/Aurora_latest.zip -P $dl_dir
   unzip $aurora_base_path/dl/Aurora_latest.zip -d $aurora_base_path/wine/drive_c/
 
   # replace dll (this is the Simple Shutdown Timer trick)
@@ -78,7 +86,7 @@ function perform_install {
 function run_aurora {
   # Aurora needs to be started from its directory
   cd $aurora_base_path/wine/drive_c/Aurora
-  LC_ALL="en-US" wine aurora.exe
+  LC_ALL="C" wine aurora.exe
 }
 
 
@@ -95,7 +103,6 @@ function run_winecfg {
 
 # make sure we have all we need
 ensure_program "wine"
-ensure_program "winetricks"
 ensure_program "wget"
 ensure_program "unzip"
 
