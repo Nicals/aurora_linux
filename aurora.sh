@@ -40,6 +40,7 @@ Available actions are:
 
 Options:
   -p, --path      path to Aurora wine prefix (default to ./wine)
+  -v, --verbose   enable verbose mode (this will display wine debug info)
 HelpText
 }
 
@@ -175,13 +176,16 @@ do
 
   case $current_arg in
     -p|--path)
-      if [ ! -d $(basename $1) ]
+      if [ ! -d $(dirname $1) ]
       then
         echo -e "\033[0;31mThe $1 directory is not a valid wine prefix. Aborting\033[0m"
         exit 1
       fi
       export WINEPREFIX=$(realpath $1)
       shift
+      ;;
+    -v|--verbose)
+      verbose_mode="on"
       ;;
     *)
       echo unknown argument -- $current_arg
@@ -190,6 +194,11 @@ do
       ;;
   esac
 done
+
+if [ "$verbose_mode" != "on" ]
+then
+  export WINEDEBUG=-all
+fi
 
 
 $taken_action
