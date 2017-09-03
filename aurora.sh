@@ -1,13 +1,27 @@
 #!/bin/bash
 
 
+# display an error message
+function echo_error {
+  echo -e "\033[0;31m$@\033[0m" >&2
+}
+
+
+# display a simple message
+# those message are displayed in green in order to make them different from
+# other program messages (such as wine or unzip)
+function echo_message {
+  echo -e "\033[0;32m$@\033[0m"
+}
+
+
 # check that a program given as argument is reachable on the system.
 # if not, display an error message and exists the program with exit status 1
 function ensure_program {
   type $1 > /dev/null 2>&1
   if [ $? -ne 0 ]
   then
-    echo >&2 "$1 is required but not installed. Aborting."
+    echo_error "$1 is required butg not installed. Aborting."
     exit 1
   fi
 }
@@ -53,7 +67,7 @@ function perform_install {
   # if aurora is already installed, we may want to perform a reinstallation
   if [ -e $WINEPREFIX ];
   then
-    read -r -p $'\033[0;31mAn existing installation of Aurora was found. Do you want to overwrite it ? [y/N] \033[0m' reinstall
+    read -r -p $'\033[0;33mAn existing installation of Aurora was found. Do you want to overwrite it ? [y/N] \033[0m' reinstall
     case $reinstall in
       [Yy])
         rm -rf $WINEPREFIX
@@ -83,7 +97,7 @@ function perform_install {
 
   # kill error14
   download_file https://mirrors.netix.net/sourceforge/v/vb/vb6extendedruntime/redist%20archive/dcom98.exe $dl_dir
-  echo -e "\033[0;32mWe will now install dcom98.exe. Please enter C:\\windows\\system when prompted to extract files\033[0m"
+  echo_message "We will now install dcom98.exe. Please enter C:\\windows\\system when prompted to extract files."
   wine $dl_dir/dcom98.exe /C
 
   # install aurora
@@ -104,7 +118,7 @@ function run_aurora {
   # make sure Aurora is installed
   if [ ! -d $aurora_path ]
   then
-    echo -e "\033[0;31mNo aurora installation found in $aurora_path. Aborting\033[0m"
+    echo_error "No aurora installation found in $aurora_path. Aborting."
     exit 1
   fi
 
@@ -117,7 +131,7 @@ function run_aurora {
 function run_winecfg {
   if [ ! -d $WINEPREFIX ]
   then
-    echo -e "\033[0;31mAurora wine prefix is not found. Aborting\033[0m"
+    echo_error "Aurora wine prefix is not found. Aborting."
     exit 1
   fi
 
@@ -154,12 +168,12 @@ case $1 in
     exit 0
     ;;
   '')
-    echo You must tell me what to do...
+    echo_error "You must tell me what to do..."
     display_help
     exit 1
     ;;
   *)
-    echo Invalid action -- \'$1\'
+    echo_error Invalid action -- \'$1\'
     display_help
     exit 1
     ;;
@@ -178,7 +192,7 @@ do
     -p|--path)
       if [ ! -d $(dirname $1) ]
       then
-        echo -e "\033[0;31mThe $1 directory is not a valid wine prefix. Aborting\033[0m"
+        echo_error "The $1 directory is not a valid wine prefix. Aborting."
         exit 1
       fi
       export WINEPREFIX=$(realpath $1)
@@ -188,7 +202,7 @@ do
       verbose_mode="on"
       ;;
     *)
-      echo unknown argument -- $current_arg
+      echo_error "unknown argument -- $current_arg"
       display_help
       exit 1
       ;;
