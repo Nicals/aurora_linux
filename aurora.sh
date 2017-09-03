@@ -30,13 +30,16 @@ function download_file {
 # displays help text
 function display_help {
   cat << HelpText
-Usage: aurora.sh ACTION
+Usage: aurora.sh ACTION [OPTION]...
 
 Available actions are:
   install         build a new installation of aurora
   start           start aurora
   winecfg         open winecfg for the aurora wine prefix
   help            display this
+
+Options:
+  -p, --path      path to Aurora wine prefix (default to ./wine)
 HelpText
 }
 
@@ -47,12 +50,12 @@ function perform_install {
   local reinstall
 
   # if aurora is already installed, we may want to perform a reinstallation
-  if [ -e $aurora_base_path/wine ];
+  if [ -e $WINEPREFIX ];
   then
     read -r -p $'\033[0;31mAn existing installation of Aurora was found. Do you want to overwrite it ? [y/N] \033[0m' reinstall
     case $reinstall in
       [Yy])
-        rm -rf $aurora_base_path/wine
+        rm -rf $WINEPREFIX
         ;;
       *)
         exit 0
@@ -84,25 +87,25 @@ function perform_install {
 
   # install aurora
   download_file http://aurora.iosphe.re/Aurora_latest.zip $dl_dir
-  unzip $aurora_base_path/dl/Aurora_latest.zip -d $aurora_base_path/wine/drive_c/
+  unzip $aurora_base_path/dl/Aurora_latest.zip -d $WINEPREFIX/drive_c/
 
   # replace dll (this is the Simple Shutdown Timer trick)
-  cp $aurora_base_path/msstdfmt.dll $aurora_base_path/wine/drive_c/windows/system32/
+  cp $aurora_base_path/msstdfmt.dll $WINEPREFIX/drive_c/windows/system32/
 
   # aurora won't start (or will crash ? Can't remember) if its log directory does not exist
-  mkdir $aurora_base_path/wine/drive_c/Logs
+  mkdir $WINEPREFIX/drive_c/Logs
 }
 
 
 function run_aurora {
   # Aurora needs to be started from its directory
-  cd $aurora_base_path/wine/drive_c/Aurora
+  cd $WINEPREFIX/drive_c/Aurora
   LC_ALL="C" wine Aurora.exe
 }
 
 
 function run_winecfg {
-  if [ ! -d $aurora_base_path/wine ]
+  if [ ! -d $WINEPREFIX ]
   then
     echo -e "\033[0;31mAurora wine prefix is not found. Aborting\033[0m"
     exit 1
@@ -125,18 +128,20 @@ export WINEPREFIX=$aurora_base_path/wine
 export WINEARCH=win32
 
 
+# get action to be taken by reading cli first argument
 case $1 in
   install)
-    perform_install
+    taken_action="perform_install"
     ;;
   start)
-    run_aurora
+    taken_action="run_aurora"
     ;;
   winecfg)
-    run_winecfg
+    taken_action="run_winecfg"
     ;;
   help)
     display_help
+    exit 0
     ;;
   '')
     echo You must tell me what to do...
@@ -149,3 +154,29 @@ case $1 in
     exit 1
     ;;
 esac
+
+
+# parse other parameters
+shift
+
+while [ $# -gt 0 ]
+do
+  current_arg=$1
+  shift
+
+  case $current_arg in
+    -p|--path)
+      realpath $1 2> /dev/null || { echo The $1 directory is not valid; exit 1; }
+      export WINEPREFIX=$(realpath $1)
+      shift
+      ;;
+    *)
+      echo unknown argument -- $current_arg
+      display_help
+      exit 1
+      ;;
+  esac
+done
+
+
+$taken_action
