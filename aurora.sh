@@ -97,7 +97,7 @@ function perform_install {
 function run_aurora {
   # Aurora needs to be started from its directory
   cd $aurora_base_path/wine/drive_c/Aurora
-  LC_ALL="C" wine aurora.exe
+  LC_ALL="C" wine Aurora.exe
 }
 
 
