@@ -112,6 +112,7 @@ function perform_install {
 }
 
 
+# starts Aurora with correct environment
 function run_aurora {
   local aurora_path=$WINEPREFIX/drive_c/Aurora
 
