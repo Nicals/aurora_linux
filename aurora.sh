@@ -94,6 +94,8 @@ function perform_install {
   $winetricks jet40
   regsvr32 msjet40.dll
   $winetricks mdac28
+  # this is the dll that comes with the Simple Shutdown Timer trick
+  regsvr32 msstdfmt.dll
 
   # kill error14
   download_file https://mirrors.netix.net/sourceforge/v/vb/vb6extendedruntime/redist%20archive/dcom98.exe $dl_dir
@@ -103,9 +105,6 @@ function perform_install {
   # install aurora
   download_file http://aurora.iosphe.re/Aurora_latest.zip $dl_dir
   unzip $aurora_base_path/dl/Aurora_latest.zip -d $WINEPREFIX/drive_c/
-
-  # replace dll (this is the Simple Shutdown Timer trick)
-  cp $aurora_base_path/msstdfmt.dll $WINEPREFIX/drive_c/windows/system32/
 
   # aurora won't start (or will crash ? Can't remember) if its log directory does not exist
   mkdir $WINEPREFIX/drive_c/Logs
