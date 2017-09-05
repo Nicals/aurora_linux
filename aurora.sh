@@ -1,6 +1,24 @@
 #!/bin/bash
 
 
+# displays help text
+function display_help {
+  cat << HelpText
+Usage: aurora.sh ACTION [OPTION]...
+
+Available actions are:
+  install         build a new installation of aurora
+  start           start aurora
+  winecfg         open winecfg for the aurora wine prefix
+  help            display this
+
+Options:
+  -p, --path      path to Aurora wine prefix (default to ./wine)
+  -v, --verbose   enable verbose mode (this will display wine debug info)
+HelpText
+}
+
+
 # display an error message
 function echo_error {
   echo -e "\033[0;31m$@\033[0m" >&2
@@ -38,24 +56,6 @@ function download_file {
   then
     wget $file_url -O $destination
   fi
-}
-
-
-# displays help text
-function display_help {
-  cat << HelpText
-Usage: aurora.sh ACTION [OPTION]...
-
-Available actions are:
-  install         build a new installation of aurora
-  start           start aurora
-  winecfg         open winecfg for the aurora wine prefix
-  help            display this
-
-Options:
-  -p, --path      path to Aurora wine prefix (default to ./wine)
-  -v, --verbose   enable verbose mode (this will display wine debug info)
-HelpText
 }
 
 
