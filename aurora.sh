@@ -112,6 +112,37 @@ function perform_install {
 }
 
 
+# copy database file in a secure place
+function backup_database {
+  local aurora_path=$WINEPREFIX/drive_c/Aurora
+  local backup_path=$WINEPREFIX/aurora_backups
+  local current_backup_path=$backup_path/$(date +%Y%m%d-%H%M%S)
+  local max_backup_count=5
+
+  # make sure the backup directory exists
+  if [ ! -d $backup_path ]
+  then
+    mkdir $backup_path
+  fi
+
+  # backup files
+  echo Making backup of Aurora database in $current_backup_path
+  mkdir $current_backup_path
+  cp $aurora_path/Stevefire.mdb $current_backup_path
+
+  # remove backups in excess
+  local obsolete_backups=$(ls $backup_path | grep -E '^[[:digit:]]{8}-[[:digit:]]{6}$' | sort -r | tail -n +$((max_backup_count + 1)))
+  if [ ! -z "$obsolete_backups" ]
+  then
+    for old_backup in $obsolete_backups
+    do
+      echo Deleting old backup $backup_path/$old_backup
+      rm -r $backup_path/$old_backup
+    done
+  fi
+}
+
+
 # starts Aurora with correct environment
 function run_aurora {
   local aurora_path=$WINEPREFIX/drive_c/Aurora
@@ -122,6 +153,8 @@ function run_aurora {
     echo_error "No aurora installation found in $aurora_path. Aborting."
     exit 1
   fi
+
+  backup_database
 
   # Aurora needs to be started from its own directory
   cd $aurora_path
