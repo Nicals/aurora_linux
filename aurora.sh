@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 
 # displays help text
 function display_help {
@@ -36,10 +38,13 @@ function echo_message {
 # check that a program given as argument is reachable on the system.
 # if not, display an error message and exists the program with exit status 1
 function ensure_program {
-  type $1 > /dev/null 2>&1
-  if [ $? -ne 0 ]
+  local found="no"
+
+  type $1 > /dev/null 2>&1 && found=yes
+
+  if [ $found == no ]
   then
-    echo_error "$1 is required butg not installed. Aborting."
+    echo_error "$1 is required but not installed. Aborting."
     exit 1
   fi
 }
@@ -63,6 +68,8 @@ function download_file {
 function perform_install {
   local dl_dir=$aurora_base_path/dl
   local reinstall
+
+  trap 'echo_error "Something went wrong. Aurora is not installed."' ERR
 
   # if aurora is already installed, we may want to perform a reinstallation
   if [ -e $WINEPREFIX ];
@@ -94,8 +101,6 @@ function perform_install {
   $winetricks jet40
   regsvr32 msjet40.dll
   $winetricks mdac28
-  # this is the dll that comes with the Simple Shutdown Timer trick
-  regsvr32 msstdfmt.dll
 
   # kill error14
   download_file https://mirrors.netix.net/sourceforge/v/vb/vb6extendedruntime/redist%20archive/dcom98.exe $dl_dir
@@ -105,6 +110,9 @@ function perform_install {
   # install aurora
   download_file http://aurora.iosphe.re/Aurora_latest.zip $dl_dir
   unzip $aurora_base_path/dl/Aurora_latest.zip -d $WINEPREFIX/drive_c/
+  # this is the dll that comes with the Simple Shutdown Timer trick
+  cp $WINEPREFIX/drive_c/Aurora/MSSTDFMT.DLL $WINEPREFIX/drive_c/windows/system32/
+  regsvr32 msstdfmt.dll
 
   # aurora won't start (or will crash ? Can't remember) if its log directory does not exist
   mkdir $WINEPREFIX/drive_c/Logs
