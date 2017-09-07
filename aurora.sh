@@ -1,4 +1,5 @@
 #!/bin/bash
+# Copyright (C) 2017 Nicolas Appriou
 
 set -e
 
