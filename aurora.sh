@@ -190,6 +190,7 @@ aurora_base_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # set wine environment veriables
 export WINEPREFIX=$aurora_base_path/wine
+export WINEDLLOVERRIDES="ole32,oleaut32,rpcrt4=n,b"
 export WINEARCH=win32
 
 
