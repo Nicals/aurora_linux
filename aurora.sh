@@ -1,7 +1,14 @@
-#!/bin/bash
+# (see $urls)!/bin/bash
 # Copyright (C) 2017 Nicolas Appriou
 
 set -e
+
+
+# url used to retrieve files are defined here
+declare -A urls
+urls[winetricks]=https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
+urls[dcom98]=https://web.archive.org/web/20080222203526if_/http://download.microsoft.com/download/d/1/3/d13cd456-f0cf-4fb2-a17f-20afc79f8a51/DCOM98.EXE
+urls[aurora]=http://aurora.iosphe.re/Aurora_latest.zip
 
 
 # displays help text
@@ -52,10 +59,10 @@ function ensure_program {
 
 
 # download a file if it does not already exists
-# first argument is the url of the file to download, second is the
-# path where to store the file
+# first argument is the name url of the file to download (see $urls)
+# second is the path where to store the file
 function download_file {
-  local file_url=$1
+  local file_url=${urls[$1]}
   local destination=$2/$(basename $file_url)
 
   if [ ! -e $destination ]
@@ -90,7 +97,7 @@ function perform_install {
   [ -d $dl_dir ] || mkdir $dl_dir
 
   # get latest winetricks
-  download_file https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks $dl_dir
+  download_file winetricks $dl_dir
   chmod +x $dl_dir/winetricks
   local winetricks=$dl_dir/winetricks
 
@@ -104,12 +111,12 @@ function perform_install {
   $winetricks mdac28
 
   # kill error14
-  download_file https://mirrors.netix.net/sourceforge/v/vb/vb6extendedruntime/redist%20archive/dcom98.exe $dl_dir
+  download_file dcom98 $dl_dir
   echo_message "We will now install dcom98.exe. Please enter C:\\windows\\system when prompted to extract files."
   wine $dl_dir/dcom98.exe /C
 
   # install aurora
-  download_file http://aurora.iosphe.re/Aurora_latest.zip $dl_dir
+  download_file aurora $dl_dir
   unzip $aurora_base_path/dl/Aurora_latest.zip -d $WINEPREFIX/drive_c/
   # this is the dll that comes with the Simple Shutdown Timer trick
   cp $WINEPREFIX/drive_c/Aurora/MSSTDFMT.DLL $WINEPREFIX/drive_c/windows/system32/
