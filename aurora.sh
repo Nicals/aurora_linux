@@ -6,7 +6,6 @@ set -e
 
 # url used to retrieve files are defined here
 declare -A urls
-urls[winetricks]=https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
 urls[dcom98]=https://web.archive.org/web/20080222203526if_/http://download.microsoft.com/download/d/1/3/d13cd456-f0cf-4fb2-a17f-20afc79f8a51/DCOM98.EXE
 urls[aurora]=http://aurora.iosphe.re/Aurora_latest.zip
 
@@ -96,19 +95,14 @@ function perform_install {
   # downloaded files will end up in this directory
   [ -d $dl_dir ] || mkdir $dl_dir
 
-  # get latest winetricks
-  download_file winetricks $dl_dir
-  chmod +x $dl_dir/winetricks
-  local winetricks=$dl_dir/winetricks
-
   # init wine and install tricks
   wine wineboot
-  $winetricks vb6run
+  winetricks vb6run
   regsvr32 ole32.dll
   regsvr32 oleaut32.dll
-  $winetricks jet40
+  winetricks jet40
   regsvr32 msjet40.dll
-  $winetricks mdac28
+  winetricks mdac28
 
   # kill error14
   download_file dcom98 $dl_dir
@@ -190,6 +184,7 @@ function run_winecfg {
 
 # make sure we have all we need
 ensure_program "wine"
+ensure_program "winetricks"
 ensure_program "wget"
 ensure_program "unzip"
 
