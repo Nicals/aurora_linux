@@ -6,8 +6,8 @@ This script is intended to ease the life of [Aurora](http://aurora2.pentarch.org
 To install Aurora, use the *install* action.
 This will automatically build a Wine prefix in this script directory and install all needed
 dependencies.
-Make sure you don't miss console message displayed in green that will guide you on which action you
-need to perform on the various install gui windows that will pop out.
+
+**You will need to enter the path *C:\windows\system* when prompted to extract files for dcom98**.
 
 ```bash-session
 $ ./aurora.sh install
@@ -30,5 +30,4 @@ Available actions are:
   start           start aurora
   winecfg         open winecfg for the aurora wine prefix
   help            display this
-
 ```
