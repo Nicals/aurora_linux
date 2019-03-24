@@ -104,11 +104,14 @@ function perform_install {
 
   # init wine and install tricks
   wine wineboot
+  echo_message "Installing vb6run"
   $winetricks vb6run
   regsvr32 ole32.dll
   regsvr32 oleaut32.dll
+  echo_message "Installing jet40"
   $winetricks jet40
   regsvr32 msjet40.dll
+  echo_message "Installing mdac28"
   $winetricks mdac28
 
   # kill error14
@@ -117,6 +120,7 @@ function perform_install {
   wine $dl_dir/dcom98.exe /C
 
   # install aurora
+  echo_message "Installing Aurora"
   download_file aurora $dl_dir
   unzip $aurora_base_path/dl/Aurora_latest.zip -d $WINEPREFIX/drive_c/
   # this is the dll that comes with the Simple Shutdown Timer trick
