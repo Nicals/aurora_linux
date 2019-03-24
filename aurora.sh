@@ -131,6 +131,8 @@ function perform_install {
 
   # aurora won't start (or will crash ? Can't remember) if its log directory does not exist
   mkdir $WINEPREFIX/drive_c/Logs
+
+  echo_message "Aurora has been installed. Enjoy your games !"
 }
 
 
