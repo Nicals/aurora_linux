@@ -100,6 +100,7 @@ function perform_install {
   download_file winetricks $dl_dir
   chmod +x $dl_dir/winetricks
   local winetricks=$dl_dir/winetricks
+  $winetricks --self-update
 
   # init wine and install tricks
   wine wineboot
