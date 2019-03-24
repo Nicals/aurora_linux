@@ -103,7 +103,9 @@ function perform_install {
   $winetricks --self-update
 
   # init wine and install tricks
+  echo_message "Installing wine. You can tweak the settings in the winecfg windows if you want to"
   wine wineboot
+  winecfg
   echo_message "Installing vb6run"
   $winetricks vb6run
   regsvr32 ole32.dll
