@@ -65,9 +65,9 @@ function download_file {
   local file_url=${urls[$1]}
   local destination=$2/$(basename $file_url)
 
-  if [ ! -e $destination ]
+  if [ ! -e "$destination" ]
   then
-    wget $file_url -O $destination
+    wget "$file_url" -O "$destination"
   fi
 }
 
@@ -80,12 +80,12 @@ function perform_install {
   trap 'echo_error "Something went wrong. Aurora is not installed."' ERR
 
   # if aurora is already installed, we may want to perform a reinstallation
-  if [ -e $WINEPREFIX ];
+  if [ -e "$WINEPREFIX" ];
   then
     read -r -p $'\033[0;33mAn existing installation of Aurora was found. Do you want to overwrite it ? [y/N] \033[0m' reinstall
     case $reinstall in
       [Yy])
-        rm -rf $WINEPREFIX
+        rm -rf "$WINEPREFIX"
         ;;
       *)
         exit 0
@@ -94,43 +94,43 @@ function perform_install {
   fi
 
   # downloaded files will end up in this directory
-  [ -d $dl_dir ] || mkdir $dl_dir
+  [ -d "$dl_dir" ] || mkdir "$dl_dir"
 
   # get latest winetricks
-  download_file winetricks $dl_dir
-  chmod +x $dl_dir/winetricks
+  download_file winetricks "$dl_dir"
+  chmod +x "$dl_dir/winetricks"
   local winetricks=$dl_dir/winetricks
-  $winetricks --self-update
+  "$winetricks" --self-update
 
   # init wine and install tricks
   echo_message "Installing wine. You can tweak the settings in the winecfg windows if you want to"
   wine wineboot
   winecfg
   echo_message "Installing vb6run"
-  $winetricks vb6run
+  "$winetricks" vb6run
   regsvr32 ole32.dll
   regsvr32 oleaut32.dll
   echo_message "Installing jet40"
-  $winetricks jet40
+  "$winetricks" jet40
   regsvr32 msjet40.dll
   echo_message "Installing mdac28"
-  $winetricks mdac28
+  "$winetricks" mdac28
 
   # kill error14
-  download_file dcom98 $dl_dir
+  download_file dcom98 "$dl_dir"
   echo_message "We will now install dcom98.exe. Please enter C:\\windows\\system when prompted to extract files."
-  wine $dl_dir/dcom98.exe /C
+  wine "$dl_dir/dcom98.exe" /C
 
   # install aurora
   echo_message "Installing Aurora"
-  download_file aurora $dl_dir
-  unzip $aurora_base_path/dl/Aurora_latest.zip -d $WINEPREFIX/drive_c/
+  download_file aurora "$dl_dir"
+  unzip "$aurora_base_path/dl/Aurora_latest.zip" -d "$WINEPREFIX/drive_c/"
   # this is the dll that comes with the Simple Shutdown Timer trick
-  cp $WINEPREFIX/drive_c/Aurora/MSSTDFMT.DLL $WINEPREFIX/drive_c/windows/system32/
+  cp "$WINEPREFIX/drive_c/Aurora/MSSTDFMT.DLL" "$WINEPREFIX/drive_c/windows/system32/"
   regsvr32 msstdfmt.dll
 
   # aurora won't start (or will crash ? Can't remember) if its log directory does not exist
-  mkdir $WINEPREFIX/drive_c/Logs
+  mkdir "$WINEPREFIX/drive_c/Logs"
 
   echo_message "Aurora has been installed. Enjoy your games !"
 }
@@ -249,12 +249,12 @@ do
 
   case $current_arg in
     -p|--path)
-      if [ ! -d $(dirname $1) ]
+      if [ ! -d $(dirname "$1") ]
       then
         echo_error "The $1 directory is not a valid wine prefix. Aborting."
         exit 1
       fi
-      export WINEPREFIX=$(realpath $1)
+      export WINEPREFIX=$(realpath "$1")
       shift
       ;;
     -v|--verbose)
