@@ -1,6 +1,8 @@
 Aurora for Linux
 ================
 
+**This is for the old Aurora, not the C# version**
+
 This script is intended to ease the life of [Aurora](http://aurora2.pentarch.org/) players under linux.
 
 To install Aurora, use the *install* action.
